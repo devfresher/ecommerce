@@ -2,7 +2,8 @@ import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nes
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request } from 'express';
-import { SortOrder } from '../typings/core';
+import { Role, SortOrder } from '../typings/core';
+import { ApprovalStatus } from 'src/modules/product/product.enum';
 
 @Injectable()
 export class FormatRequestQueryInterceptor implements NestInterceptor {
@@ -10,7 +11,7 @@ export class FormatRequestQueryInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest<Request>();
 
     const {
-      query: { limit, page, sortOrder, search, status },
+      query: { limit, page, sortOrder, search, status, approvalStatus, role, userId },
     } = request;
 
     request.pageOpts = {
@@ -19,9 +20,14 @@ export class FormatRequestQueryInterceptor implements NestInterceptor {
     };
 
     request.queryOpts = {
+      approvalStatus: ApprovalStatus[approvalStatus as keyof typeof ApprovalStatus]
+        ? approvalStatus
+        : undefined,
+      role: Role[role as keyof typeof Role] ? role : undefined,
       sortOrder: sortOrder != 'asc' ? SortOrder.desc : SortOrder.asc,
       search: search ? search : undefined,
       status: status ? status : undefined,
+      userId: userId ? userId : undefined,
     };
 
     return next.handle().pipe(tap(() => {}));

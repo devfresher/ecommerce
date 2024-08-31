@@ -1,15 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
-import { User, UserDocument } from '../user/user.schema';
+import { HydratedDocument, Model, Schema as MongooseSchema } from 'mongoose';
+import { User } from '../user/user.schema';
 import { ApprovalStatus } from './product.enum';
-import { Id } from 'src/common/typings/core';
+import { DocumentWithTimestamps, Id } from 'src/common/typings/core';
+import { UtilsHelper } from 'src/common/helpers/utils.helper';
+import { BadRequestException } from '@nestjs/common';
 
-export type ProductDocument = HydratedDocument<Product>;
+export type ProductDocument = DocumentWithTimestamps<Product>;
 
 @Schema({ timestamps: true })
 export class Product {
   @Prop({ required: true })
   name!: string;
+
+  @Prop({ required: true })
+  label!: string;
 
   @Prop({ required: true })
   description!: string;
@@ -20,7 +25,7 @@ export class Product {
   @Prop({ required: true })
   quantity!: number;
 
-  @Prop({ required: true, enum: ApprovalStatus, default: ApprovalStatus.PENDING })
+  @Prop({ required: true, enum: ApprovalStatus, default: ApprovalStatus.Pending })
   approvalStatus!: ApprovalStatus;
 
   // Field to store the admin who approved/rejected the product
@@ -40,3 +45,24 @@ export class Product {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
+ProductSchema.pre<ProductDocument>('save', async function (next) {
+  const productModel = this.constructor as Model<ProductDocument>;
+
+  try {
+    if (this.isModified('name')) {
+      const label = UtilsHelper.getLabel(this.name);
+
+      const existingProduct = await productModel.findOne({ label, user: this.user });
+
+      if (existingProduct) {
+        throw new BadRequestException('Product with this name already exists');
+      }
+
+      this.label = label;
+    }
+
+    next();
+  } catch (err: any) {
+    next(err);
+  }
+});

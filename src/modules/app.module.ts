@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TransformResponseInterceptor } from 'src/common/interceptors/transfor-response.interceptor';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -9,6 +14,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true,
       cache: true,
     }),
+
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -16,6 +22,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
+
+    AuthModule,
+    UserModule,
+    ProductModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformResponseInterceptor,
+    },
   ],
 })
 export class AppModule {}

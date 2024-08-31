@@ -1,13 +1,32 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user-dto';
+import { Controller, Post, Body, Get, UseGuards, Patch, Param } from '@nestjs/common';
 import { UserService } from './user.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { PageOptions, QueryOptions, Role } from 'src/common/typings/core';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
+import { CustomQuery } from 'src/common/decorators/query-options.decorator';
+import { Page } from 'src/common/decorators/page-options.decorator';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Get()
+  @ResponseMessage('All users retrieved successfully')
+  getAllUsers(@CustomQuery() queryOpts: QueryOptions, @Page() pageOpts: PageOptions) {
+    return this.userService.getAll(pageOpts, queryOpts);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.admin)
+  @Patch('/:id/toggle-ban/')
+  @ResponseMessage('User updated successfully')
+  async toggleBan(@Param('id') id: string) {
+    const user = await this.userService.toggleBan(id);
+    const { password, ...rest } = user.toObject();
+    return rest;
   }
 }

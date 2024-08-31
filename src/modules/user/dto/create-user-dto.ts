@@ -17,4 +17,6 @@ export class CreateUserDto {
   @MinLength(6, { message: 'Confirm password must be at least 6 characters' })
   @MatchWith('password', { message: 'Passwords do not match' })
   confirmPassword!: string;
+
+  role?: string;
 }

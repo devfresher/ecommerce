@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import { Exclude } from 'class-transformer';
+import { DocumentWithTimestamps, Role } from 'src/common/typings/core';
 
-export type UserDocument = HydratedDocument<User>;
+export type UserDocument = DocumentWithTimestamps<User>;
 
 @Schema({ timestamps: true })
 export class User {
@@ -16,8 +16,8 @@ export class User {
   @Prop({ required: true })
   password!: string;
 
-  @Prop({ default: 'user' })
-  role!: 'user' | 'admin';
+  @Prop({ default: 'user', enum: Role })
+  role!: Role;
 
   @Prop({ default: false })
   isBanned!: boolean;

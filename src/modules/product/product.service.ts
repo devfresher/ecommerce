@@ -5,18 +5,49 @@ import { BaseService } from 'src/common/services/base.service';
 import { Product, ProductDocument } from './product.schema';
 import { CreateProductDto, UpdateProductDto, UpdateStatusDto } from './product.dto';
 import { ApprovalStatus } from './product.enum';
+import { FindAllOption, PageOptions, QueryOptions } from 'src/common/typings/core';
+import { PaginatedResult } from 'src/common/typings/paginate';
+import { UtilsHelper } from 'src/common/helpers/utils.helper';
 
 @Injectable()
 export class ProductService extends BaseService<Product, ProductDocument> {
-  constructor(@InjectModel(Product.name) private readonly productModel: Model<Product>) {
+  constructor(@InjectModel(Product.name) private readonly productModel: Model<ProductDocument>) {
     super(productModel, Product, 'Product');
   }
 
   defaultRelations = [this.generateRelation('user')];
 
+  async getAll(
+    pageOpts: PageOptions,
+    queryOpts: QueryOptions,
+  ): Promise<Product[] | PaginatedResult<Product>> {
+    const options: FindAllOption<ProductDocument> = {
+      pageOpts,
+      relations: this.defaultRelations,
+      sort: { createdAt: queryOpts.sortOrder },
+      ...(queryOpts.approvalStatus && { filter: { approvalStatus: queryOpts.approvalStatus } }),
+      ...(queryOpts.userId && { filter: { user: queryOpts.userId } }),
+    };
+
+    if (queryOpts.search) {
+      options.filter = {
+        $or: [
+          { name: { $regex: queryOpts.search, $options: 'i' } },
+          { description: { $regex: queryOpts.search, $options: 'i' } },
+        ],
+      };
+    }
+
+    return await this.getAllForService(options);
+  }
+
   async create(userId: string, createProductDto: CreateProductDto): Promise<Product> {
+    const { name } = createProductDto;
+    const label = await this.generateAndCheckLabel(name);
+
     const product = new this.productModel({
       ...createProductDto,
+      label,
       user: userId,
     });
 
@@ -28,14 +59,22 @@ export class ProductService extends BaseService<Product, ProductDocument> {
     productId: string,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    const product = await this.productModel.findOneAndUpdate(
-      { _id: productId, user: userId },
-      updateProductDto,
-      { new: true },
-    );
+    const session = await this.productModel.startSession();
+    session.startTransaction();
+    try {
+      const product = await this.getOrError({ filter: { _id: productId, user: userId } }, session);
+      Object.assign(product, updateProductDto);
+      product.approvalStatus = ApprovalStatus.Pending;
 
-    if (!product) throw new NotFoundException('Product not found');
-    return product;
+      await product.save({ session });
+      await session.commitTransaction();
+      return product;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   async delete(userId: string, productId: string): Promise<Product> {
@@ -53,13 +92,13 @@ export class ProductService extends BaseService<Product, ProductDocument> {
       const product = await this.getOrError({ filter: { _id: productId } }, session);
 
       if (product.approvalStatus === status)
-        throw new ConflictException(`Product already ${status}`);
+        throw new ConflictException(`Product already ${status.toLowerCase()}`);
 
-      if (product.approvalStatus === ApprovalStatus.APPROVED && status === ApprovalStatus.REJECTED)
-        throw new ConflictException('Product cannot be rejected');
+      if (product.approvalStatus === ApprovalStatus.Approved && status === ApprovalStatus.Rejected)
+        throw new ConflictException('Product already approved and cannot be rejected');
 
-      if (product.approvalStatus === ApprovalStatus.REJECTED && status === ApprovalStatus.APPROVED)
-        throw new ConflictException('Product cannot be approved');
+      if (product.approvalStatus === ApprovalStatus.Rejected && status === ApprovalStatus.Approved)
+        throw new ConflictException('Product already rejected and cannot be approved');
 
       product.approvalStatus = status;
       product.actionBy = new mongoose.Types.ObjectId(adminId);
@@ -76,5 +115,14 @@ export class ProductService extends BaseService<Product, ProductDocument> {
     } finally {
       session.endSession();
     }
+  }
+
+  private async generateAndCheckLabel(name: string) {
+    const label = UtilsHelper.getLabel(name);
+
+    const product = await this.get({ filter: { label } });
+    if (product) throw new ConflictException('Product with this name already exists');
+
+    return label;
   }
 }
