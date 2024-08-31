@@ -17,6 +17,13 @@ export class ProductService extends BaseService<Product, ProductDocument> {
 
   defaultRelations = [this.generateRelation('user')];
 
+  /**
+   * Retrieves all products that match the given filter conditions.
+   *
+   * @param pageOpts Options for pagination.
+   * @param queryOpts Options for filtering the results.
+   * @returns A list of products, or a paginated result if pagination options are provided.
+   */
   async getAll(
     pageOpts: PageOptions,
     queryOpts: QueryOptions,
@@ -54,6 +61,15 @@ export class ProductService extends BaseService<Product, ProductDocument> {
     return await product.save();
   }
 
+  /**
+   * Updates a product that belongs to the given user.
+   * Any updated product has it approval status set to Pending.
+   *
+   * @param userId The ID of the user who owns the product.
+   * @param productId The ID of the product to update.
+   * @param updateProductDto The data to update the product with.
+   * @returns The updated product.
+   */
   async update(
     userId: string,
     productId: string,
@@ -84,6 +100,16 @@ export class ProductService extends BaseService<Product, ProductDocument> {
     return product;
   }
 
+  /**
+   * Updates the approval status of a product.
+   * The approval status can be changed from Pending to Approved or Rejected,
+   * If the product is already in the desired status, a ConflictException is thrown.
+   *
+   * @param adminId The ID of the administrator who is updating the product.
+   * @param productId The ID of the product to update.
+   * @param data The data to update the product with.
+   * @returns The updated product.
+   */
   async updateStatus(adminId: string, productId: string, data: UpdateStatusDto): Promise<Product> {
     const session = await this.productModel.startSession();
     session.startTransaction();
@@ -117,6 +143,14 @@ export class ProductService extends BaseService<Product, ProductDocument> {
     }
   }
 
+  /**
+   * Generates a label from a given name and checks if a product with this label
+   * already exists in the database.
+   *
+   * @param name - The input name to convert.
+   * @returns The generated label string if no product with this label exists.
+   * @throws ConflictException if a product with this label already exists.
+   */
   private async generateAndCheckLabel(name: string) {
     const label = UtilsHelper.getLabel(name);
 

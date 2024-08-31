@@ -16,6 +16,13 @@ export class UserService extends BaseService<User, UserDocument> {
 
   defaultRelations = [];
 
+  /**
+   * Retrieves all users that match the given filter conditions.
+   *
+   * @param pageOpts Options for pagination.
+   * @param queryOpts Options for filtering the results.
+   * @returns A list of users, or a paginated result if pagination options are provided.
+   */
   async getAll(
     pageOpts: PageOptions,
     queryOpts: QueryOptions,

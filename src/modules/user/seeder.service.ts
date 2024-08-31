@@ -18,6 +18,14 @@ export class SeederService implements OnModuleInit {
     await this.seedUser();
   }
 
+  /**
+   * Seeds an admin user into the database if it does not already exist.
+   *
+   * The admin user is created with the email 'admin@example.com' and the password 'Password123'.
+   * The user is assigned the 'admin' role.
+   *
+   * If the user already exists, this function does nothing.
+   */
   private async seedAdmin() {
     const adminEmail = 'admin@example.com';
     const adminExists = await this.userService.get({ filter: { email: adminEmail } });
@@ -38,6 +46,9 @@ export class SeederService implements OnModuleInit {
     }
   }
 
+  /**
+   * Seeds a demo user into the database if it does not already exist.
+   */
   private async seedUser() {
     const userEmail = 'demo-user@example.com';
     const userExists = await this.userService.get({ filter: { email: userEmail } });
