@@ -6,6 +6,7 @@ import 'reflect-metadata';
 import { FormatRequestQueryInterceptor } from './common/interceptors/format-request.interceptor';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationError } from 'class-validator';
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -13,14 +14,15 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('/api/v1');
   app.use(helmet());
-  app.useBodyParser('json', { limit: '50mb' });
-  app.useBodyParser('urlencoded', { limit: '50mb' });
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
   app.useGlobalPipes(
     new ValidationPipe({
       /**
        * Formats validation errors into a single array of strings
        * @param validationErrors List of validation errors
        * @returns A new BadRequestException with the formatted error messages
+       * @see https://docs.nestjs.com/exception-filters#custom-error-responses
        */
       exceptionFactory: (validationErrors: ValidationError[]) => {
         const errorMessages = validationErrors.flatMap((error) =>
