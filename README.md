@@ -110,7 +110,7 @@ Along with this user, related products will also be seeded into the database.
     npm run start:dev
     ```
 
-    The application will start in development mode, and you can access it at <http://localhost:3000>.
+    The application will start in development mode, and you can access it at <http://localhost:3000/api/v1>.
 
 3. Access API Documentation:
 
