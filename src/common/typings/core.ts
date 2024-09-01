@@ -9,7 +9,7 @@ export interface PageOptions {
 export interface QueryOptions {
   search?: string;
   status?: string;
-  sortOrder: SortOrder;
+  sortOrder?: SortOrder;
   approvalStatus?: string;
   role?: Role;
   isBanned?: boolean;

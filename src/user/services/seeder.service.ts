@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from './user.service';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
