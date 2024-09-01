@@ -22,6 +22,9 @@ async function bootstrap() {
     .setTitle('Basic E-commerce API')
     .setDescription('API documentation for the e-commerce application')
     .setVersion('1.0')
+    .addTag('Auth', 'Operations related to authentication')
+    .addTag('Products', 'Operations related to products')
+    .addTag('Users', 'Operations related to users')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

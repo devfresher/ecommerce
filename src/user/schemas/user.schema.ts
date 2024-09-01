@@ -21,6 +21,10 @@ export class User {
 
   @Prop({ default: false, index: true })
   isBanned!: boolean;
+
+  createAt!: Date;
+
+  updateAt!: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

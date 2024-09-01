@@ -7,11 +7,16 @@ import { Roles } from 'src/common/decorators/role.decorator';
 import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
 import { CustomQuery } from 'src/common/decorators/query-options.decorator';
 import { Page } from 'src/common/decorators/page-options.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * Retrieves all users that match the given filter conditions.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @Get()
@@ -20,6 +25,9 @@ export class UserController {
     return this.userService.getAll(pageOpts, queryOpts);
   }
 
+  /**
+   * Toggles the ban status of a user.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @Patch('/:id/toggle-ban/')

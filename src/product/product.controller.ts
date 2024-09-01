@@ -24,12 +24,17 @@ import { ResponseMessage } from 'src/common/decorators/response-message.decorato
 import { CustomQuery } from 'src/common/decorators/query-options.decorator';
 import { Page } from 'src/common/decorators/page-options.decorator';
 import { ProductCacheInterceptor } from './interceptors/cache.interceptor';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Products')
 @Controller('products')
 @UseInterceptors(ProductCacheInterceptor)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  /**
+   * Creates a new product.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.user)
   @Post()
@@ -42,6 +47,9 @@ export class ProductController {
     return this.productService.create(user.id, createProductDto);
   }
 
+  /**
+   * Retrieves a list of products, or a paginated result if pagination options are provided.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @Get()
@@ -51,6 +59,10 @@ export class ProductController {
     return this.productService.getAll(page, query);
   }
 
+  /**
+   * Retrieves a list of products that belong to the currently authenticated user.
+   * Supports pagination and filtering.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.user)
   @Get('mine')
@@ -65,6 +77,10 @@ export class ProductController {
     return this.productService.getAll(page, query);
   }
 
+  /**
+   * Retrieves a list of approved products, or a paginated result if pagination options are provided.
+   * Supports pagination and filtering.
+   */
   @Get('approved')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('Approved products fetched successfully')
@@ -73,6 +89,12 @@ export class ProductController {
     return this.productService.getAll(page, query);
   }
 
+  /**
+   * Updates a product that belongs to the currently authenticated user.
+   * The product to update is identified by the `:id` parameter.
+   * If the product is not found, a `NotFoundException` is thrown.
+   * If the product is successfully updated, returns the updated product.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.user)
   @Put(':id')
@@ -87,6 +109,12 @@ export class ProductController {
     return this.productService.update(user.id, id, updateProductDto);
   }
 
+  /**
+   * Deletes a product that belongs to the currently authenticated user.
+   * The product to delete is identified by the `:id` parameter.
+   * If the product is not found, a `NotFoundException` is thrown.
+   * If the product is successfully deleted, returns the deleted product.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.user)
   @Delete(':id')
@@ -96,6 +124,12 @@ export class ProductController {
     return this.productService.delete(user.id, id);
   }
 
+  /**
+   * Updates the approval status of a product as an administrator.
+   * The product to update is identified by the `:id` parameter.
+   * If the product is not found, a `NotFoundException` is thrown.
+   * If the product is successfully updated, returns the updated product.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @Patch('action/:id')

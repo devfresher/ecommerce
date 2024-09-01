@@ -25,18 +25,18 @@ export class ProductService extends BaseService<Product, ProductDocument> {
    * @returns A list of products, or a paginated result if pagination options are provided.
    */
   async getAll(
-    pageOpts: PageOptions,
-    queryOpts: QueryOptions,
+    pageOpts?: PageOptions,
+    queryOpts?: QueryOptions,
   ): Promise<Product[] | PaginatedResultDto<Product>> {
     const options: FindAllOption<ProductDocument> = {
       pageOpts,
       relations: this.defaultRelations,
-      sort: { createdAt: queryOpts.sortOrder },
-      ...(queryOpts.approvalStatus && { filter: { approvalStatus: queryOpts.approvalStatus } }),
-      ...(queryOpts.userId && { filter: { user: queryOpts.userId } }),
+      sort: { createdAt: queryOpts?.sortOrder },
+      ...(queryOpts?.approvalStatus && { filter: { approvalStatus: queryOpts.approvalStatus } }),
+      ...(queryOpts?.userId && { filter: { user: queryOpts.userId } }),
     };
 
-    if (queryOpts.search) {
+    if (queryOpts?.search) {
       options.filter = {
         $or: [
           { name: { $regex: queryOpts.search, $options: 'i' } },
