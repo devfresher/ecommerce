@@ -10,6 +10,7 @@ import {
   Param,
   Delete,
   Patch,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -22,8 +23,10 @@ import { UserDocument } from '../user/user.schema';
 import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
 import { CustomQuery } from 'src/common/decorators/query-options.decorator';
 import { Page } from 'src/common/decorators/page-options.decorator';
+import { ProductCacheInterceptor } from './interceptors/cache.interceptor';
 
 @Controller('products')
+@UseInterceptors(ProductCacheInterceptor)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 

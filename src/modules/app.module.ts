@@ -1,22 +1,29 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { TransformResponseInterceptor } from 'src/common/interceptors/transfor-response.interceptor';
+import { ResponseInterceptor } from 'src/common/interceptors/http-response.interceptor';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { CustomThrottlerGuard } from 'src/common/guards/custom-throttler.guard';
+import { CacheModule } from '@nestjs/cache-manager';
+import { RequestQueryInterceptor } from 'src/common/interceptors/http-request.interceptor';
 
 @Module({
   imports: [
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // 1 minute
+        ttl: 1 * 60 * 1000, // 1 minute
         limit: 10,
       },
     ]),
+
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 3 * 60 * 1000, // 3 minutes
+    }),
 
     ConfigModule.forRoot({
       envFilePath: '.env',
@@ -38,12 +45,16 @@ import { CustomThrottlerGuard } from 'src/common/guards/custom-throttler.guard';
   ],
   providers: [
     {
-      provide: APP_INTERCEPTOR,
-      useClass: TransformResponseInterceptor,
-    },
-    {
       provide: APP_GUARD,
       useClass: CustomThrottlerGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestQueryInterceptor,
     },
   ],
 })

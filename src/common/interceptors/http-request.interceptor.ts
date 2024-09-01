@@ -6,7 +6,7 @@ import { Role, SortOrder } from '../typings/core';
 import { ApprovalStatus } from 'src/modules/product/product.enum';
 
 @Injectable()
-export class FormatRequestQueryInterceptor implements NestInterceptor {
+export class RequestQueryInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
 
