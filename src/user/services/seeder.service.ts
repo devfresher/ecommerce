@@ -5,17 +5,22 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SeederService implements OnModuleInit {
   constructor(
     private readonly userService: UserService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly configService: ConfigService,
   ) {}
 
-  async onModuleInit() {
-    await this.seedAdmin();
-    await this.seedUser();
+  async onModuleInit(): Promise<void> {
+    await this.seedAdminUser();
+
+    if (this.configService.get<string>('seedUserAndProduct') === 'true') {
+      await this.seedExampleUser();
+    }
   }
 
   /**
@@ -26,7 +31,7 @@ export class SeederService implements OnModuleInit {
    *
    * If the user already exists, this function does nothing.
    */
-  private async seedAdmin() {
+  private async seedAdminUser() {
     const adminEmail = 'admin@example.com';
     const adminExists = await this.userService.get({ filter: { email: adminEmail } });
 
@@ -48,8 +53,12 @@ export class SeederService implements OnModuleInit {
 
   /**
    * Seeds a demo user into the database if it does not already exist.
+   *
+   * The demo user is created with the email 'demo-user@example.com' and the password 'Password123'.
+   *
+   * If the user already exists, this function does nothing.
    */
-  private async seedUser() {
+  private async seedExampleUser() {
     const userEmail = 'demo-user@example.com';
     const userExists = await this.userService.get({ filter: { email: userEmail } });
 

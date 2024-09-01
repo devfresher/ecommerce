@@ -3,16 +3,20 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product, ProductDocument } from 'src/product/schemas/product.schema';
 import { UserService } from 'src/user/services/user.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SeederService implements OnModuleInit {
   constructor(
     private readonly userService: UserService,
     @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
+    private readonly configService: ConfigService,
   ) {}
 
   async onModuleInit() {
-    await this.seedProducts();
+    if (this.configService.get<string>('SEED_USER_AND_PRODUCT') === 'true') {
+      await this.seedSampleProducts();
+    }
   }
 
   /**
@@ -26,7 +30,7 @@ export class SeederService implements OnModuleInit {
    *
    * @private
    */
-  private async seedProducts() {
+  private async seedSampleProducts() {
     const userEmail = 'demo-user@example.com';
     const userExists = await this.userService.get({ filter: { email: userEmail } });
 

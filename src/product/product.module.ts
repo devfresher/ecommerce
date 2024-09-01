@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from 'src/product/schemas/product.schema';
 import { ProductService } from './services/product.service';
-import { SeederService } from './schemas/seeder.service';
+import { SeederService } from './services/seeder.service';
 import { UserModule } from 'src/user/user.module';
 import { ProductController } from './product.controller';
 
