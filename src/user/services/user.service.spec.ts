@@ -22,7 +22,7 @@ const mockUser = {
   email: 'test@example.com',
   password: 'hashedPassword',
   isBanned: false,
-} ;
+};
 
 describe('UserService', () => {
   let service: UserService;
@@ -72,8 +72,15 @@ describe('UserService', () => {
         confirmPassword: 'password123',
       };
       const hashedPassword = 'hashedPassword123';
-      jest.spyOn(bcrypt, 'hash').mockResolvedValue(hashedPassword);
-      mockUserModel.create.mockResolvedValue({ ...mockUser, ...dto, password: hashedPassword });
+
+      const mockBcrypt = {
+        hash: jest.fn().mockResolvedValue(hashedPassword),
+      };
+
+      mockUserModel.create.mockImplementation((data) => {
+        const hashedPassword = mockBcrypt.hash(data.password);
+        return Promise.resolve({ ...mockUser, ...dto, password: hashedPassword });
+      });
 
       const result = await service.create(dto);
       expect(result).toEqual({ ...mockUser, ...dto, password: hashedPassword });
