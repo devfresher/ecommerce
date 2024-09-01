@@ -139,3 +139,11 @@ src/
 - Auth Module: Handles user authentication and authorization.
 - Product Module: Manages product-related operations.
 - User Module: Manages user-related operations.
+
+## Testing
+
+To run tests, use the following command:
+
+```bash
+npm run test
+```
