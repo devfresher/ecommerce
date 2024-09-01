@@ -87,7 +87,7 @@ When the application starts, an admin account is automatically seeded with the f
 - **Email**: `admin@example.com`
 - **Password**: `Password123`
 
-If the SEED_USER_AND_PRODUCTS environment variable is set to 'true', a sample user will also be seeded with the following credentials:
+If the `SEED_USER_AND_PRODUCTS` environment variable is set to 'true', a sample user will also be seeded with the following credentials:
 
 - **Email**: `demo-user@example.com`
 - **Password**: `Password123`
