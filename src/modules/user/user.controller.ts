@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Get, UseGuards, Patch, Param } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from './services/user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { PageOptions, QueryOptions, Role } from 'src/common/typings/core';
@@ -25,8 +25,6 @@ export class UserController {
   @Patch('/:id/toggle-ban/')
   @ResponseMessage('User updated successfully')
   async toggleBan(@Param('id') id: string) {
-    const user = await this.userService.toggleBan(id);
-    const { password, ...rest } = user.toObject();
-    return rest;
+    return await this.userService.toggleBan(id);
   }
 }

@@ -2,8 +2,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import { User, UserDocument } from './user.schema';
-import { CreateUserDto } from './dto/create-user-dto';
+import { User, UserDocument } from '../schemas/user.schema';
+import { CreateUserDto } from '../dto/create-user-dto';
 import { BaseService } from 'src/common/services/base.service';
 import { PaginatedResult } from 'src/common/typings/paginate';
 import { FindAllOption, PageOptions, QueryOptions, Role } from 'src/common/typings/core';
@@ -61,7 +61,7 @@ export class UserService extends BaseService<User, UserDocument> {
       password: hashedPassword,
     });
 
-    return createdUser.save();
+    return (await createdUser.save()).toObject();
   }
 
   async toggleBan(id: string) {
@@ -70,9 +70,12 @@ export class UserService extends BaseService<User, UserDocument> {
     try {
       const user = await this.getOrError({ filter: { _id: id } }, session);
       user.isBanned = !user.isBanned;
+
       await user.save({ session });
       await session.commitTransaction();
-      return user;
+      const { password, ...result } = user.toObject();
+
+      return result;
     } catch (err) {
       await session.abortTransaction();
       throw err;

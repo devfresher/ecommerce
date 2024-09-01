@@ -12,14 +12,14 @@ import {
   Patch,
   UseInterceptors,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
+import { ProductService } from './services/product.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateProductDto, UpdateProductDto, UpdateStatusDto } from './product.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { PageOptions, QueryOptions, Role } from 'src/common/typings/core';
 import { AuthenticatedUser } from 'src/common/decorators/authenticated-user.decorator';
-import { UserDocument } from '../user/user.schema';
+import { UserDocument } from '../user/schemas/user.schema';
 import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
 import { CustomQuery } from 'src/common/decorators/query-options.decorator';
 import { Page } from 'src/common/decorators/page-options.decorator';

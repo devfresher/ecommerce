@@ -1,10 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from 'src/modules/user/services/user.service';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
-import { User, UserDocument } from './user.schema';
+import { User, UserDocument } from '../schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateUserDto } from './dto/create-user-dto';
+import { CreateUserDto } from '../dto/create-user-dto';
 
 @Injectable()
 export class SeederService implements OnModuleInit {

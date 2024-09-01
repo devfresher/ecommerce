@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { UserService } from '../user/user.service';
-import { LoginUserDto } from '../user/dto/login-user-dto';
+import { UserService } from '../../user/services/user.service';
+import { LoginUserDto } from '../../user/dto/login-user-dto';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
       if (user.isBanned)
         throw new UnauthorizedException('Your account has been banned, please contact support');
 
-      const { password, ...result } = user.toObject();
+      const { password, ...result } = user;
       return result;
     }
     return null;

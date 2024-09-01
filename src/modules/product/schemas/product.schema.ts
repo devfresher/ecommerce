@@ -1,22 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../user/user.schema';
-import { ApprovalStatus } from './product.enum';
+import { Model, Schema as MongooseSchema } from 'mongoose';
 import { DocumentWithTimestamps, Id } from 'src/common/typings/core';
 import { UtilsHelper } from 'src/common/helpers/utils.helper';
 import { BadRequestException } from '@nestjs/common';
+import { ApprovalStatus } from 'src/modules/product/product.enum';
+import { User } from 'src/modules/user/schemas/user.schema';
 
 export type ProductDocument = DocumentWithTimestamps<Product>;
 
 @Schema({ timestamps: true })
 export class Product {
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   name!: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   label!: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   description!: string;
 
   @Prop({ required: true })
@@ -25,7 +25,7 @@ export class Product {
   @Prop({ required: true })
   quantity!: number;
 
-  @Prop({ required: true, enum: ApprovalStatus, default: ApprovalStatus.Pending })
+  @Prop({ required: true, enum: ApprovalStatus, default: ApprovalStatus.Pending, index: true })
   approvalStatus!: ApprovalStatus;
 
   // Field to store the admin who approved/rejected the product
@@ -40,11 +40,15 @@ export class Product {
   @Prop({ type: Date, required: false })
   actedUponAt?: Date;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
   user!: User | Id;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
+
+// Configure composite indexes
+ProductSchema.index({ label: 1, user: 1 }, { unique: true });
+
 ProductSchema.pre<ProductDocument>('save', async function (next) {
   const productModel = this.constructor as Model<ProductDocument>;
 

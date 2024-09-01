@@ -1,4 +1,4 @@
-import { ClassConstructor } from 'class-transformer';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { DocumentWithTimestamps, FindAllOption, RelationOptions } from '../typings/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ClientSession, FilterQuery, Model, PopulateOptions } from 'mongoose';
@@ -33,19 +33,21 @@ export abstract class BaseService<T, D extends DocumentWithTimestamps<T>> {
     const page = opts?.pageOpts ? opts?.pageOpts?.page : 1;
     const limit = opts?.pageOpts ? opts?.pageOpts?.limit : 15;
 
-    let items = await this.model.find(opts?.filter || {}, opts?.fields, {
-      ...(page && limit && { limit, skip: (page - 1) * limit }),
-      populate: opts?.relations,
-      sort: opts?.sort,
-      session,
-    });
+    let items = await this.model
+      .find(opts?.filter || {}, opts?.fields, {
+        ...(page && limit && { limit, skip: (page - 1) * limit }),
+        populate: opts?.relations,
+        sort: opts?.sort,
+        session,
+      })
+      .lean();
 
     if (!(page && limit)) {
-      return items;
+      return plainToInstance(this.entity, items);
     } else {
       const totalCount = await this.model.countDocuments(opts?.filter || {});
       const pagination = this.paginate(totalCount, page, limit);
-      return { items, pagination };
+      return { items: plainToInstance(this.entity, items), pagination };
     }
   }
 
@@ -57,12 +59,15 @@ export abstract class BaseService<T, D extends DocumentWithTimestamps<T>> {
    * @returns The number of documents that match the conditions.
    */
   async countAll(filter?: FilterQuery<D>, session?: ClientSession): Promise<number> {
-    return this.model.countDocuments(filter, { session });
+    return this.model.countDocuments(filter, { session }).lean();
   }
 
   /**
    * Retrieves a single document that matches the given filter conditions,
    * or throws a `NotFoundException` if no document is found.
+   *
+   * Returns the raw mongoose document, such that it can be used with mongoose methods.
+   * E.g. `doc.remove()`, `doc.save()`, etc.
    *
    * @param opts Options for retrieving the document.
    * @param session The client session to use when retrieving the document.
@@ -70,7 +75,10 @@ export abstract class BaseService<T, D extends DocumentWithTimestamps<T>> {
    * @throws NotFoundException If no document is found.
    */
   async getOrError(opts?: FindAllOption<D>, session?: ClientSession): Promise<D> {
-    const entity = await this.get(opts, session);
+    const entity = await this.model.findOne(opts?.filter || {}, opts?.fields, {
+      populate: opts?.relations,
+      session,
+    });
 
     if (!entity)
       throw new NotFoundException(
@@ -83,14 +91,17 @@ export abstract class BaseService<T, D extends DocumentWithTimestamps<T>> {
   /**
    * Retrieves a single document that matches the given filter conditions.
    *
+   * Uses lean mode to return a plain JavaScript object instead of a mongoose document.
+   * 
    * @param opts Options for retrieving the document.
    * @param session The client session to use when retrieving the document.
    * @returns The retrieved document, or null if no document is found.
    */
   async get(opts?: FindAllOption<D>, session?: ClientSession): Promise<D | null> {
-    return this.model.findOne(opts?.filter || {}, opts?.fields, {
+    return await this.model.findOne(opts?.filter || {}, opts?.fields, {
       populate: opts?.relations,
       session,
+      lean: true,
     });
   }
 

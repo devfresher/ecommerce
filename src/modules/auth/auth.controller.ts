@@ -1,11 +1,11 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { LoginUserDto } from '../user/dto/login-user-dto';
 import { ResponseMessage } from 'src/common/decorators/response-message.decorator';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/services/user.service';
 import { CreateUserDto } from '../user/dto/create-user-dto';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import { User } from '../user/user.schema';
+import { User } from '../user/schemas/user.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -26,7 +26,7 @@ export class AuthController {
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.create(createUserDto);
-    const { password, ...rest } = user.toObject();
+    const { password, ...rest } = user;
     return rest;
   }
 }

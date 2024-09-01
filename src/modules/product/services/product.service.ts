@@ -2,9 +2,9 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { BaseService } from 'src/common/services/base.service';
-import { Product, ProductDocument } from './product.schema';
-import { CreateProductDto, UpdateProductDto, UpdateStatusDto } from './product.dto';
-import { ApprovalStatus } from './product.enum';
+import { Product, ProductDocument } from 'src/modules/product/schemas/product.schema';
+import { CreateProductDto, UpdateProductDto, UpdateStatusDto } from '../product.dto';
+import { ApprovalStatus } from '../product.enum';
 import { FindAllOption, PageOptions, QueryOptions } from 'src/common/typings/core';
 import { PaginatedResult } from 'src/common/typings/paginate';
 import { UtilsHelper } from 'src/common/helpers/utils.helper';
@@ -15,7 +15,7 @@ export class ProductService extends BaseService<Product, ProductDocument> {
     super(productModel, Product, 'Product');
   }
 
-  defaultRelations = [this.generateRelation('user')];
+  defaultRelations = [this.generateRelation('user', { fields: { password: 0 } })];
 
   /**
    * Retrieves all products that match the given filter conditions.
