@@ -12,6 +12,7 @@ export interface QueryOptions {
   sortOrder: SortOrder;
   approvalStatus?: string;
   role?: Role;
+  isBanned?: boolean;
   userId?: string;
 }
 

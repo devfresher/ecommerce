@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request } from 'express';
 import { Role, SortOrder } from '../typings/core';
-import { ApprovalStatus } from 'src/modules/product/product.enum';
+import { ApprovalStatus } from 'src/product/product.enum';
 
 @Injectable()
 export class RequestQueryInterceptor implements NestInterceptor {
@@ -11,7 +11,7 @@ export class RequestQueryInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest<Request>();
 
     const {
-      query: { limit, page, sortOrder, search, status, approvalStatus, role, userId },
+      query: { limit, page, sortOrder, search, status, approvalStatus, role, userId, isBanned },
     } = request;
 
     request.pageOpts = {
@@ -24,6 +24,7 @@ export class RequestQueryInterceptor implements NestInterceptor {
         ? approvalStatus
         : undefined,
       role: Role[role as keyof typeof Role] ? role : undefined,
+      isBanned: isBanned ? isBanned == 'true' : undefined,
       sortOrder: sortOrder != 'asc' ? SortOrder.desc : SortOrder.asc,
       search: search ? search : undefined,
       status: status ? status : undefined,

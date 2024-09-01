@@ -1,8 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Product, ProductDocument } from 'src/modules/product/schemas/product.schema';
-import { UserService } from '../../user/services/user.service';
+import { Product, ProductDocument } from 'src/product/schemas/product.schema';
+import { UserService } from 'src/user/services/user.service';
 
 @Injectable()
 export class SeederService implements OnModuleInit {

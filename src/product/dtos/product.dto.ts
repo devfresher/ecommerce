@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString, MaxLength, maxLength, Min } from 'class-validator';
-import { ApprovalStatus } from './product.enum';
+import { ApprovalStatus } from '../product.enum';
 
 export class CreateProductDto {
   @IsString()

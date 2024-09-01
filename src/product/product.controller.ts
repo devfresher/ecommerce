@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './services/product.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateProductDto, UpdateProductDto, UpdateStatusDto } from './product.dto';
+import { CreateProductDto, UpdateProductDto, UpdateStatusDto } from './dtos/product.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { PageOptions, QueryOptions, Role } from 'src/common/typings/core';

@@ -6,20 +6,20 @@ export type UserDocument = DocumentWithTimestamps<User>;
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   name!: string;
 
-  @Prop({ unique: true, required: true })
+  @Prop({ unique: true, required: true, index: true })
   email!: string;
 
   @Exclude()
   @Prop({ required: true })
   password!: string;
 
-  @Prop({ default: 'user', enum: Role })
+  @Prop({ default: 'user', enum: Role, index: true })
   role!: Role;
 
-  @Prop({ default: false })
+  @Prop({ default: false, index: true })
   isBanned!: boolean;
 }
 

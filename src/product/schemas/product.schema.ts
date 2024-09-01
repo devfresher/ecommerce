@@ -3,8 +3,8 @@ import { Model, Schema as MongooseSchema } from 'mongoose';
 import { DocumentWithTimestamps, Id } from 'src/common/typings/core';
 import { UtilsHelper } from 'src/common/helpers/utils.helper';
 import { BadRequestException } from '@nestjs/common';
-import { ApprovalStatus } from 'src/modules/product/product.enum';
-import { User } from 'src/modules/user/schemas/user.schema';
+import { ApprovalStatus } from 'src/product/product.enum';
+import { User } from 'src/user/schemas/user.schema';
 
 export type ProductDocument = DocumentWithTimestamps<Product>;
 
@@ -28,15 +28,15 @@ export class Product {
   @Prop({ required: true, enum: ApprovalStatus, default: ApprovalStatus.Pending, index: true })
   approvalStatus!: ApprovalStatus;
 
-  // Field to store the admin who approved/rejected the product
+  // Field that captures the admin who approved or rejected the product
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
   actionBy?: User | Id;
 
-  // Field to capture the reason for approval or rejection
+  // Field that captures the reason for the admin action
   @Prop({ type: String, required: false })
   actionReason?: string;
 
-  // Field to store the date when the product was last approved or rejected
+  // Field that stores the date when the admin approved or rejected the product
   @Prop({ type: Date, required: false })
   actedUponAt?: Date;
 

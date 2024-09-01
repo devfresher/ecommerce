@@ -2,7 +2,7 @@ import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { DocumentWithTimestamps, FindAllOption, RelationOptions } from '../typings/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ClientSession, FilterQuery, Model, PopulateOptions } from 'mongoose';
-import { PaginatedResult, PaginationMetadata } from '../typings/paginate';
+import { PaginatedResultDto, PaginationMetadata } from '../dtos/pagination.dto';
 
 @Injectable()
 export abstract class BaseService<T, D extends DocumentWithTimestamps<T>> {
@@ -29,7 +29,7 @@ export abstract class BaseService<T, D extends DocumentWithTimestamps<T>> {
   protected async getAllForService(
     opts?: FindAllOption<D>,
     session?: ClientSession,
-  ): Promise<T[] | PaginatedResult<T>> {
+  ): Promise<T[] | PaginatedResultDto<T>> {
     const page = opts?.pageOpts ? opts?.pageOpts?.page : 1;
     const limit = opts?.pageOpts ? opts?.pageOpts?.limit : 15;
 
@@ -92,7 +92,7 @@ export abstract class BaseService<T, D extends DocumentWithTimestamps<T>> {
    * Retrieves a single document that matches the given filter conditions.
    *
    * Uses lean mode to return a plain JavaScript object instead of a mongoose document.
-   * 
+   *
    * @param opts Options for retrieving the document.
    * @param session The client session to use when retrieving the document.
    * @returns The retrieved document, or null if no document is found.

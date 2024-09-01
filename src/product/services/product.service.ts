@@ -2,12 +2,12 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { BaseService } from 'src/common/services/base.service';
-import { Product, ProductDocument } from 'src/modules/product/schemas/product.schema';
-import { CreateProductDto, UpdateProductDto, UpdateStatusDto } from '../product.dto';
+import { Product, ProductDocument } from 'src/product/schemas/product.schema';
+import { CreateProductDto, UpdateProductDto, UpdateStatusDto } from '../dtos/product.dto';
 import { ApprovalStatus } from '../product.enum';
 import { FindAllOption, PageOptions, QueryOptions } from 'src/common/typings/core';
-import { PaginatedResult } from 'src/common/typings/paginate';
 import { UtilsHelper } from 'src/common/helpers/utils.helper';
+import { PaginatedResultDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class ProductService extends BaseService<Product, ProductDocument> {
@@ -27,7 +27,7 @@ export class ProductService extends BaseService<Product, ProductDocument> {
   async getAll(
     pageOpts: PageOptions,
     queryOpts: QueryOptions,
-  ): Promise<Product[] | PaginatedResult<Product>> {
+  ): Promise<Product[] | PaginatedResultDto<Product>> {
     const options: FindAllOption<ProductDocument> = {
       pageOpts,
       relations: this.defaultRelations,

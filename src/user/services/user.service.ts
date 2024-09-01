@@ -3,10 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { User, UserDocument } from '../schemas/user.schema';
-import { CreateUserDto } from '../dto/create-user-dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { BaseService } from 'src/common/services/base.service';
-import { PaginatedResult } from 'src/common/typings/paginate';
 import { FindAllOption, PageOptions, QueryOptions, Role } from 'src/common/typings/core';
+import { PaginatedResultDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class UserService extends BaseService<User, UserDocument> {
@@ -26,13 +26,14 @@ export class UserService extends BaseService<User, UserDocument> {
   async getAll(
     pageOpts: PageOptions,
     queryOpts: QueryOptions,
-  ): Promise<User[] | PaginatedResult<User>> {
+  ): Promise<User[] | PaginatedResultDto<User>> {
     const options: FindAllOption<UserDocument> = {
       pageOpts,
       relations: this.defaultRelations,
       sort: { createdAt: queryOpts.sortOrder },
       filter: {
         ...(queryOpts.role && { role: queryOpts.role }),
+        ...(queryOpts.isBanned && { isBanned: queryOpts.isBanned }),
       },
     };
 
