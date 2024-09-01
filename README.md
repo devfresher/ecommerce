@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project is a NestJS-based e-commerce API designed to handle product management, user authentication, and various other features common in e-commerce platforms. The API allows users to browse products, while authenticated users can manage their products. Admin users have additional privileges to approve or reject products. The application is designed with performance and security optimizations in mind.
+This project is a NestJS-based basic e-commerce API designed to handle product management, user authentication, and user management. The API allows users to browse products, while authenticated users can manage their products. Admin users have additional privileges to approve or reject products. The application is designed with performance and security optimizations in mind.
 
 ## Project Objectives
 
