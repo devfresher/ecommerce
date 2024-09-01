@@ -4,12 +4,12 @@
 
 This project is a NestJS-based e-commerce API designed to handle product management, user authentication, and various other features common in e-commerce platforms. The API allows users to browse products, while authenticated users can manage their products. Admin users have additional privileges to approve or reject products. The application is designed with performance and security optimizations in mind.
 
-## Objectives
+## Project Objectives
 
-- **Product Management**: Users can create, update, delete, and view products.
-- **User Authentication**: Secure authentication with role-based access control.
-- **Admin Approval**: Admin users can approve or reject products with a reason.
-- **Optimizations**: Implementation of performance and security best practices.
+- **Scalable Architecture**: The application is designed to be easily scalable by leveraging NestJS's modular architecture.
+- **Maintainability**: Clean and well-organized code, making it easy for developers to extend and maintain the project.
+- **Security**: Implementation of robust security measures, including authentication, authorization, and rate limiting.
+- **Optimizations**: Implementation of performance optimization techniques and best practices including caching, database indexing, pagination
 
 ## Features
 
@@ -22,12 +22,6 @@ This project is a NestJS-based e-commerce API designed to handle product managem
 - **Pagination**: Efficient data retrieval with pagination.
 - **Caching**: Improve performance by caching frequently accessed data.
 - **Swagger Integration**: Automatically generated API documentation.
-
-## Project Objectives
-
-- **Scalable Architecture**: The application is designed to be easily scalable by leveraging NestJS's modular architecture.
-- **Maintainability**: Clean and well-organized code, making it easy for developers to extend and maintain the project.
-- **Security**: Implementation of robust security measures, including authentication, authorization, and rate limiting.
 
 ## Development Environment Setup
 
