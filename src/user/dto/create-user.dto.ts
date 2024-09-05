@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { MatchWith } from 'src/common/decorators/match.decorator';
 
@@ -18,5 +19,6 @@ export class CreateUserDto {
   @MatchWith('password', { message: 'Passwords do not match' })
   confirmPassword!: string;
 
+  @ApiHideProperty()
   role?: string;
 }

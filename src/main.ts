@@ -22,12 +22,16 @@ async function bootstrap() {
     .setTitle('Basic E-commerce API')
     .setDescription('API documentation for the e-commerce application')
     .setVersion('1.0')
+    .addTag('Auth', 'Operations related to authentication')
+    .addTag('Products', 'Operations related to products')
+    .addTag('Users', 'Operations related to users')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(3000, '0.0.0.0');
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

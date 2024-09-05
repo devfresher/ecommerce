@@ -42,6 +42,10 @@ export class Product {
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
   user!: User | Id;
+
+  createdAt!: Date;
+
+  updatedAt!: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
