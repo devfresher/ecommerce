@@ -1,9 +1,10 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product, ProductDocument } from 'src/product/schemas/product.schema';
 import { UserService } from 'src/user/services/user.service';
 import { ConfigService } from '@nestjs/config';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class SeederService implements OnModuleInit {
@@ -11,6 +12,7 @@ export class SeederService implements OnModuleInit {
     private readonly userService: UserService,
     @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
     private readonly configService: ConfigService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
   ) {}
 
   async onModuleInit() {
@@ -65,6 +67,8 @@ export class SeederService implements OnModuleInit {
       }));
 
       await this.productModel.bulkWrite(bulkOps);
+
+      this.logger.log('Products seeded successfully');
     }
   }
 }

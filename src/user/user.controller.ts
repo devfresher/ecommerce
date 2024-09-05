@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Patch, Param } from '@nestjs/common';
+import { Controller, Get, UseGuards, Patch, Param } from '@nestjs/common';
 import { UserService } from './services/user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -8,6 +8,7 @@ import { ResponseMessage } from 'src/common/decorators/response-message.decorato
 import { CustomQuery } from 'src/common/decorators/query-options.decorator';
 import { Page } from 'src/common/decorators/page-options.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ParseObjectIdPipe } from 'src/common/pipes/parse-objectId.pipe';
 
 @ApiTags('Users')
 @Controller('users')
@@ -34,7 +35,7 @@ export class UserController {
   @Roles(Role.admin)
   @Patch('/:id/toggle-ban/')
   @ResponseMessage('User updated successfully')
-  async toggleBan(@Param('id') id: string) {
+  async toggleBan(@Param('id', ParseObjectIdPipe) id: string) {
     return await this.userService.toggleBan(id);
   }
 
@@ -43,7 +44,7 @@ export class UserController {
    */
   @Get('/:id')
   @ResponseMessage('User retrieved successfully')
-  async getOne(@Param('id') id: string) {
+  async getOne(@Param('id', ParseObjectIdPipe) id: string) {
     return await this.userService.getOrError({ filter: { _id: id } });
   }
 }

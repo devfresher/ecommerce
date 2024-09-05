@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { UserService } from './user.service';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
@@ -6,6 +6,7 @@ import { User, UserDocument } from '../schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class SeederService implements OnModuleInit {
@@ -13,6 +14,7 @@ export class SeederService implements OnModuleInit {
     private readonly userService: UserService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly configService: ConfigService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -47,7 +49,7 @@ export class SeederService implements OnModuleInit {
       });
 
       await admin.save();
-      console.log('Admin user seeded successfully.');
+      this.logger.log('Admin user seeded successfully.');
     }
   }
 
@@ -71,7 +73,7 @@ export class SeederService implements OnModuleInit {
       };
 
       await this.userService.create(userData);
-      console.log('User seeded successfully.');
+      this.logger.log('User seeded successfully.');
     }
   }
 }
