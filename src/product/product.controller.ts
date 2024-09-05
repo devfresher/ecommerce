@@ -24,7 +24,7 @@ import { ResponseMessage } from 'src/common/decorators/response-message.decorato
 import { CustomQuery } from 'src/common/decorators/query-options.decorator';
 import { Page } from 'src/common/decorators/page-options.decorator';
 import { ProductCacheInterceptor } from './interceptors/cache.interceptor';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Products')
 @Controller('products')
@@ -35,6 +35,7 @@ export class ProductController {
   /**
    * Creates a new product.
    */
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.user)
   @Post()
@@ -50,6 +51,7 @@ export class ProductController {
   /**
    * Retrieves a list of products, or a paginated result if pagination options are provided.
    */
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @Get()
@@ -63,6 +65,7 @@ export class ProductController {
    * Retrieves a list of products that belong to the currently authenticated user.
    * Supports pagination and filtering.
    */
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.user)
   @Get('mine')
@@ -95,12 +98,12 @@ export class ProductController {
    * If the product is not found, a `NotFoundException` is thrown.
    * If the product is successfully updated, returns the updated product.
    */
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.user)
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('Product updated successfully')
-  @Put(':id')
   async update(
     @AuthenticatedUser() user: UserDocument,
     @Param('id') id: string,
@@ -115,6 +118,7 @@ export class ProductController {
    * If the product is not found, a `NotFoundException` is thrown.
    * If the product is successfully deleted, returns the deleted product.
    */
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.user)
   @Delete(':id')
@@ -130,6 +134,7 @@ export class ProductController {
    * If the product is not found, a `NotFoundException` is thrown.
    * If the product is successfully updated, returns the updated product.
    */
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.admin)
   @Patch('action/:id')
