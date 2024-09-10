@@ -1,4 +1,10 @@
-import { BeforeApplicationShutdown, Inject, LoggerService, Module } from '@nestjs/common';
+import {
+  BeforeApplicationShutdown,
+  Inject,
+  LoggerService,
+  Module,
+  OnApplicationShutdown,
+} from '@nestjs/common';
 import { InjectConnection, MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -65,17 +71,21 @@ import { winstonLoggerConfig } from './logger/winston-logger.config';
   ],
   controllers: [AppController],
 })
-export class AppModule implements BeforeApplicationShutdown {
+export class AppModule implements BeforeApplicationShutdown, OnApplicationShutdown {
   constructor(
     @InjectConnection() private readonly dbConnection: Connection,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService, // Inject Winston Logger
   ) {}
 
   async beforeApplicationShutdown(signal?: string) {
-    this.logger.log(`Received shutdown signal: ${signal}`);
+    this.logger.log(`Received shutdown signal: ${signal}`, 'AppModule');
 
     if (this.dbConnection) await this.dbConnection.close();
 
-    this.logger.log(`Mongoose connection closed`);
+    this.logger.log(`Mongoose connection closed`, 'AppModule');
+  }
+
+  async onApplicationShutdown(signal?: string) {
+    this.logger.log(`Application shutdown gracefully`, 'AppModule');
   }
 }
