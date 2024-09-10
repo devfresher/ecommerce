@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
-export class SeederService implements OnModuleInit {
+export class ProductSeederService implements OnModuleInit {
   constructor(
     private readonly userService: UserService,
     @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
@@ -68,7 +68,7 @@ export class SeederService implements OnModuleInit {
 
       await this.productModel.bulkWrite(bulkOps);
 
-      this.logger.log('Products seeded successfully');
+      this.logger.log('Products seeded successfully', 'ProductSeederService');
     }
   }
 }

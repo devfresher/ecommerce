@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
-export class SeederService implements OnModuleInit {
+export class UserSeederService implements OnModuleInit {
   constructor(
     private readonly userService: UserService,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
@@ -49,7 +49,7 @@ export class SeederService implements OnModuleInit {
       });
 
       await admin.save();
-      this.logger.log('Admin user seeded successfully.');
+      this.logger.log('Admin user seeded successfully.', 'UserSeederService');
     }
   }
 

@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SeederService } from './seeder.service';
+import { UserSeederService } from './user-seeder.service';
 import { Model } from 'mongoose';
 import { User } from '../schemas/user.schema';
 
-describe('SeederService', () => {
-  let service: SeederService;
+describe('UserSeederService', () => {
+  let service: UserSeederService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SeederService, { provide: Model, useValue: User }],
+      providers: [UserSeederService, { provide: Model, useValue: User }],
     }).compile();
 
-    service = module.get<SeederService>(SeederService);
+    service = module.get<UserSeederService>(UserSeederService);
   });
 
   it('should be defined', () => {

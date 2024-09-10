@@ -19,11 +19,7 @@ export const winstonLoggerConfig = {
       zippedArchive: true,
       maxSize: '20m',
       maxFiles: '14d',
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.ms(),
-        nestWinstonModuleUtilities.format.nestLike(),
-      ),
+      format: winston.format.combine(winston.format.timestamp(), winston.format.ms()),
     }),
 
     new WinstonDailyRotateFile({
@@ -33,11 +29,7 @@ export const winstonLoggerConfig = {
       zippedArchive: true,
       maxSize: '20m',
       maxFiles: '14d',
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.ms(),
-        nestWinstonModuleUtilities.format.nestLike(),
-      ),
+      format: winston.format.combine(winston.format.timestamp(), winston.format.ms()),
     }),
   ],
 };
