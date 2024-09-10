@@ -20,6 +20,7 @@ import { AppController } from 'src/app.controller';
 import { Connection } from 'mongoose';
 import { WinstonModule, WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { winstonLoggerConfig } from './logger/winston-logger.config';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
@@ -39,6 +40,16 @@ import { winstonLoggerConfig } from './logger/winston-logger.config';
       envFilePath: '.env',
       isGlobal: true,
       cache: true,
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string()
+          .valid('development', 'production', 'test')
+          .default('development')
+          .required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_ACCESS_EXPIRES: Joi.string().default('5h').required(),
+        DB_URI: Joi.string().required(),
+        SEED_USER_AND_PRODUCTS: Joi.boolean().default('true').required(),
+      }),
     }),
 
     MongooseModule.forRootAsync({
