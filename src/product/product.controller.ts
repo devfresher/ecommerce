@@ -25,6 +25,7 @@ import { CustomQuery } from 'src/common/decorators/query-options.decorator';
 import { Page } from 'src/common/decorators/page-options.decorator';
 import { ProductCacheInterceptor } from './interceptors/cache.interceptor';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ParseObjectIdPipe } from 'src/common/pipes/parse-objectId.pipe';
 
 @ApiTags('Products')
 @Controller('products')
@@ -106,7 +107,7 @@ export class ProductController {
   @ResponseMessage('Product updated successfully')
   async update(
     @AuthenticatedUser() user: UserDocument,
-    @Param('id') id: string,
+    @Param('id', ParseObjectIdPipe) id: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
     return this.productService.update(user.id, id, updateProductDto);
@@ -124,7 +125,10 @@ export class ProductController {
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   @ResponseMessage('Product deleted successfully')
-  async remove(@AuthenticatedUser() user: UserDocument, @Param('id') id: string) {
+  async remove(
+    @AuthenticatedUser() user: UserDocument,
+    @Param('id', ParseObjectIdPipe) id: string,
+  ) {
     return this.productService.delete(user.id, id);
   }
 
@@ -142,7 +146,7 @@ export class ProductController {
   @ResponseMessage('Product updated successfully')
   async adminAction(
     @AuthenticatedUser() admin: UserDocument,
-    @Param('id') id: string,
+    @Param('id', ParseObjectIdPipe) id: string,
     @Body() data: UpdateStatusDto,
   ) {
     return this.productService.updateStatus(admin.id, id, data);

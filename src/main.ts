@@ -6,9 +6,13 @@ import 'reflect-metadata';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as express from 'express';
+import { LoggerFactory } from './logger/logger.factory';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  const logger = LoggerFactory('E-commerce');
+  app.useLogger(logger);
 
   app.enableCors();
   app.setGlobalPrefix('/api/v1');
@@ -17,6 +21,8 @@ async function bootstrap() {
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+
+  app.enableShutdownHooks();
 
   const config = new DocumentBuilder()
     .setTitle('Basic E-commerce API')
@@ -32,6 +38,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0');
-  console.log(`Application is running on: ${await app.getUrl()}`);
+
+  logger.log(`Application is running on: ${await app.getUrl()}`, 'AppBootstrap');
 }
 bootstrap();
